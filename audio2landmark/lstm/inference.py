@@ -25,8 +25,8 @@ def parse_args():
     parser.add_argument('--mfcc_path', type=str, default='MFCC_MEAD/M003/angry/level_1/001/000.npy')
     parser.add_argument('--face_path', type=str, default='Crop_MEAD/M003/front/angry/level_1/001/000.jpg')
     parser.add_argument('--landmark_path', type=str, default='Landmark_MEAD/M003/front/angry/level_1/001/000.npy')
-#     parser.add_argument('--model_path', type=str, default='./saved_model_kld2/audio2feature.pt')
-    parser.add_argument('--model_path', type=str, default='./saved_model/backups/audio2feature_1000000.bak')
+    parser.add_argument('--model_path', type=str, default='./saved_model/audio2feature.pt')
+#     parser.add_argument('--model_path', type=str, default='./saved_model/backups/audio2feature_1000000.bak')
     parser.add_argument("--save_path", type=str, default='./result/lm_pred.npy')
 
     parser.add_argument('--device', type=str, default='cuda:2')
