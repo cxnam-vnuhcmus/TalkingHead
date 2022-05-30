@@ -40,6 +40,14 @@ class FaceDataset(BaseDataset):
                           [range(46, 53), [52,53,54,55,56,57,46]],             # mouth
                           [[46,63,62,61,52], [52,60,59,58,46]]                 # tongue
                          ]
+
+#         self.part_list = [[range(0, 17)],                                   # face
+#                      [range(17, 22)],                                  # left eyebrow
+#                      [range(22, 27)],                                  # right eyebrow
+#                      [range(27, 31), range(31, 36)],                   # nose
+#                      [[36,37,38,39], [39,40,41,36]],                   # left eye
+#                      [[42,43,44,45], [45,46,47,42]],                   # right eye
+#                      [range(48, 55), [54,55,56,57,58,59,48], range(60, 65), [64,65,66,67,60]]] # mouth and tongue
         self.mouth_outer = [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 46]
         self.label_list = [1, 1, 2, 3, 3, 4, 5] # labeling for different facial parts
                 

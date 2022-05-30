@@ -22,10 +22,13 @@ from models import create_model
 from models.networks import APC_encoder
 import util.util as util
 from util.visualizer import Visualizer
+from funcs import utils
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--edgemap_path', type=str, default='./lm_obama.jpg')
+    parser.add_argument('--edgemap_path', type=str, default='/root/Data_Preprocessing/Edgemap_MEAD/M003/front/angry/level_1/001/000.jpg')
+    parser.add_argument('--landmark_path', type=str, default='/root/Data_Preprocessing/Landmark_MEAD/M003/front/angry/level_1/001/010.npy')
+    parser.add_argument('--sample_landmark_path', type=str, default='./sample_pred_landmark.npy')
 
     parser.add_argument('--id', default='Obama1', help="person name, e.g. Obama1, Obama2, May, Nadella, McStay")
     parser.add_argument('--driving_audio', default='./data/Input/00083.wav', help="path to driving audio")
@@ -80,22 +83,36 @@ if __name__ == '__main__':
     ref_trans = fit_data['trans'][:,:,0].astype(np.float32)[1]
     shoulder3D = np.load(join(data_root, 'shoulder_points3D.npy'))[1]
     shoulder_AMP = config['model_params']['Headpose']['shoulder_AMP']
+    std_mean_pts3d = np.load(config['dataset_params']['pts3d_path']).mean(axis=0)
+    camera = utils.camera()
     camera_intrinsic = np.load(join(data_root, 'camera_intrinsic.npy')).astype(np.float32)
-    
-    pred_shoulders = np.zeros([1, 18, 2], dtype=np.float32)
-#     pred_shoulders3D = np.zeros([1, 18, 3], dtype=np.float32)
-#     diff_trans = pred_headpose[0][3:] - ref_trans
-#     pred_shoulders3D[k] = shoulder3D + diff_trans * shoulder_AMP
+    mean_pts3d = np.load(join(data_root, 'mean_pts3d.npy'))
+    pts3d = np.load(config['dataset_params']['pts3d_path']) + mean_pts3d
+
     # project
     project = camera_intrinsic.dot(shoulder3D.T)
     project[:2, :] /= project[2, :]  # divide z
-    pred_shoulders[0] = project[:2, :].T
+    pred_shoulders = project[:2, :].T
     
     
-    input_feature_maps = cv2.imread(opt.edgemap_path, cv2.IMREAD_GRAYSCALE)
-    input_feature_maps = cv2.resize(input_feature_maps, (512, 512), interpolation = cv2.INTER_AREA)    
+    print(camera_intrinsic)
 
-    input_feature_maps = facedataset.dataset.draw_shoulder_points(input_feature_maps, pred_shoulders[0])    
+    lm_data = np.load(opt.landmark_path, allow_pickle=True) 
+    lm_data[:, 0] -= 20
+    sample_lm = np.load(opt.sample_landmark_path, allow_pickle=True)
+    sample_lm[46, :] = lm_data[60]
+    sample_lm[47:52, :] = lm_data[49:54]
+    sample_lm[52, :] = lm_data[64]
+    sample_lm[53:58, :] = lm_data[55:60]
+    sample_lm[58:61, :] = lm_data[61:64]
+    sample_lm[61:64, :] = lm_data[65:68]
+    
+    input_feature_maps = facedataset.dataset.draw_face_feature_maps(sample_lm) 
+    
+#     input_feature_maps = cv2.imread(opt.edgemap_path, cv2.IMREAD_GRAYSCALE)
+#     input_feature_maps = cv2.resize(input_feature_maps, (512, 512), interpolation = cv2.INTER_AREA)    
+
+    input_feature_maps = facedataset.dataset.draw_shoulder_points(input_feature_maps, pred_shoulders)    
     
     
     
