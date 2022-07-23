@@ -1,0 +1,1 @@
+Compute NME and AUC for 112 images with 68 points :: [(NME): mean=8.506, std=1.627], auc@0.07=1.667, auc@0.08-5.739, acc@0.07=20.536, acc@0.08=42.857

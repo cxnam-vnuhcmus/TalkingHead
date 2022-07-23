@@ -33,15 +33,17 @@ class Audio2FeatureModel(nn.Module):
         self.num_params()
         self.register_buffer("step", torch.zeros(1, dtype=torch.long))
                     
-    
+    #input shape (bs, no.frame, no.feature)
     def forward(self, x):
         self.step += 1
         bs, item_len, ndim = x.shape
-        x = x.reshape(bs, -1)
-        x = self.downsample(x)
-        x = x.unsqueeze(1)
+        x = x.view(-1, ndim)
+        x = self.downsample(x)        
+        x = x.view(bs, -1, 512)
         output, (hn, cn) = self.LSTM(x)
-        pred = self.fc(output.squeeze(1)).reshape(bs, -1, 2)
+        output = output.reshape(-1, 256)
+        pred = self.fc(output)
+        pred = pred.view(bs, -1, 136)
         return pred
 
     def init_model(self):
